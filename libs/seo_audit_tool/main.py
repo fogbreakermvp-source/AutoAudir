@@ -58,6 +58,20 @@ class HyperAuditor:
             print(f"|HYPER_AUDIT_COMPLETE|{lead_name}|")
             return audit_results
 
+    def capture_proof(self, lead_name, url):
+        """Captures Visual Proof of contact/audit success."""
+        proof_dir = "data/proofs"
+        if not os.path.exists(proof_dir):
+            os.makedirs(proof_dir)
+            
+        with SB(uc=True, headless=True) as sb:
+            sb.open(url)
+            filename = f"proof_{lead_name.replace(' ', '_').lower()}.png"
+            filepath = os.path.join(proof_dir, filename)
+            sb.save_screenshot(filepath)
+            print(f"|VISUAL_PROOF_CAPTURED|{filepath}|")
+            return filepath
+
 if __name__ == "__main__":
     auditor = HyperAuditor()
     auditor.run_comprehensive_audit("Palm Beach Dental", "https://www.palmbeachdental.com")

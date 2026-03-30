@@ -89,6 +89,18 @@ class FormSniper:
         except Exception:
             return None
 
+    def verify_success(self, html):
+        """Patterns of success (EN/ES) for industrial verification."""
+        patterns = [
+            "thank you", "thanks", "message sent", "received", "success", "confirmed",
+            "gracias", "enviado", "recibido", "éxito", "confirmado", "en breve", "soon"
+        ]
+        html_lower = html.lower()
+        for pattern in patterns:
+            if pattern in html_lower:
+                return True, pattern
+        return False, "Undetected/Doubtful"
+
     async def inject_form(self, lead):
         if not lead['website']:
             return False
@@ -107,47 +119,46 @@ class FormSniper:
             if not forms:
                 return False
 
-            # Use the form that looks like a contact form
             form = forms[0]
             action = form.get('action', '')
             if not action.startswith('http'):
                 action = contact_url.rstrip('/') + '/' + action.lstrip('/')
 
-            # Prepare payload
             payload = {}
             for input_tag in form.find_all(['input', 'textarea', 'select']):
                 name = input_tag.get('name')
-                if not name:
-                    continue
-
+                if not name: continue
                 type_ = input_tag.get('type', 'text').lower()
                 name_lower = name.lower()
 
                 if 'name' in name_lower or 'nombre' in name_lower:
-                    payload[name] = "Equipo de Auditoría Digital"
-                elif 'email' in name_lower or 'correo' in name_lower or 'mail' in name_lower:
+                    payload[name] = "Elite Performance Audit Team"
+                elif 'email' in name_lower or 'correo' in name_lower:
                     payload[name] = self.user_email
-                elif 'phone' in name_lower or 'tel' in name_lower or 'telefono' in name_lower:
-                    payload[name] = ""  # Leave phone blank
+                elif 'phone' in name_lower or 'tel' in name_lower:
+                    payload[name] = "" 
                 elif 'subject' in name_lower or 'asunto' in name_lower:
                     payload[name] = self.get_subject(lead)
-                elif 'message' in name_lower or 'mensaje' in name_lower or input_tag.name == 'textarea':
+                elif 'message' in name_lower or'mensaje' in name_lower or input_tag.name == 'textarea':
                     payload[name] = self.get_form_message(lead)
                 elif type_ == 'hidden':
                     payload[name] = input_tag.get('value', '')
 
-            # Fire the injection
+            # Fire & Verify
             resp = await self.client.post(action, data=payload)
-            if resp.status_code in [200, 301, 302]:
-                print(f"[+ OK] Form Injected for {lead['name']}")
+            is_verified, pattern = self.verify_success(resp.text)
+            
+            if resp.status_code in [200, 301, 302] and is_verified:
+                print(f"[+ OK] Form Verified for {lead['name']} (Pattern: {pattern})")
                 self.db.update_lead(lead['id'], status='contacted', contacted_at=time.strftime('%Y-%m-%d %H:%M:%S'))
-                audit_logger.log("FORM_INJECTION", f"Successfully contacted {lead['name']} via {contact_url}")
+                audit_logger.log("PROOF_ENGINE", f"SUCCESS: {lead['name']} verified via '{pattern}' on {contact_url}")
                 return True
+            else:
+                audit_logger.log("PROOF_ENGINE", f"DOUBTFUL: {lead['name']} responded with status {resp.status_code} but no success pattern found.")
+                return False
         except Exception as e:
             print(f"[!] Form injection failed for {lead['name']}: {e}")
             return False
-
-        return False
 
     async def run_batch(self, limit=500):
         """Industrial Scale: Process leads in massive async batches."""

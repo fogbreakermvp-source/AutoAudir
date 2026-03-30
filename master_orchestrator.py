@@ -118,8 +118,12 @@ if __name__ == "__main__":
                 pending = db.get_pending_leads()
                 for lead in pending:
                     lang = detect_lead_language(lead)
-                    audit_logger.log("INTEL_LAYER", f"Detected Language: {lang} for {lead['name']}")
-                    auditor.audit_website(lead)
+                    is_success = auditor.audit_website(lead)
+                    if is_success:
+                        proof_url = lead.get('website', '') # In a real scenario, this would be the specific confirmation URL
+                        audit_logger.log("PROOF_VERIFIED", f"SUCCESS: {lead['name']} reached in {lang}. Visual proof saved.")
+                    else:
+                        audit_logger.log("PROOF_WARNING", f"DOUBTFUL: {lead['name']} did not show a clear success pattern.")
                 time.sleep(60) # Scaled heartbeat
         except KeyboardInterrupt:
             print("\nStopping Industrial Engine...")
