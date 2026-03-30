@@ -12,7 +12,7 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(PROJECT_ROOT)
 
 from libs.google_maps_scraper.main import GoogleMapsScraper
-from libs.seo_audit_tool.main import SEOAuditor
+from libs.seo_audit_tool.main import HyperAuditor
 from libs.whatsapp_bot.main import WhatsAppMessenger
 
 def main():
@@ -25,9 +25,9 @@ def main():
     
     # 2. Audit Leads (GH: Abin-Vinod/seo-audit-tool)
     print("\n[Step 2/3] Auditing Leads & Generating Reports...")
-    auditor = SEOAuditor()
+    auditor = HyperAuditor()
     # Scrape real lead for demo
-    auditor.run_audit("Gilmar Real Estate Madrid", "https://www.gilmar.es")
+    auditor.run_comprehensive_audit("Gilmar Real Estate Madrid", "https://www.gilmar.es")
     
     # 3. Outreach (GH: SeleniumBase Outreach Engine)
     print("\n[Step 3/3] Starting Outreach (WhatsApp Web)...")
