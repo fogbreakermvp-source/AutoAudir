@@ -1,6 +1,8 @@
 name: AuditAutoPro 2026 Pipeline
 
 on:
+  push:
+    branches: [ main ]
   schedule:
     - cron: '*/30 * * * *' # Every 30 minutes for 10k/day throughput
   workflow_dispatch: 
