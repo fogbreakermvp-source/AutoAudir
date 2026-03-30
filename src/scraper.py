@@ -36,17 +36,18 @@ class GoogleMapsScraper:
             except:
                 pass
 
-            # Scroll to load more results
+            # Scroll to load more results (Human-like scroll)
             try:
-                if sb.is_element_present('div[role="feed"]'):
-                    for _ in range(5):
-                        sb.execute_script("document.querySelector('div[role=\"feed\"]').scrollTop += 1000")
-                        time.sleep(random.uniform(1, 2))
+                feed_selector = 'div[role="feed"]'
+                if sb.is_element_present(feed_selector):
+                    for _ in range(10):
+                        sb.execute_script(f"document.querySelector('{feed_selector}').scrollTop += 1500")
+                        time.sleep(random.uniform(0.5, 1.5))
                 else:
-                    # Fallback scroll if 'feed' role is not found
-                    for _ in range(3):
+                    # Fallback scroll using body keyboard events
+                    for _ in range(5):
                         sb.press_key("body", "PageDown")
-                        time.sleep(1)
+                        time.sleep(0.8)
             except:
                 pass
 
@@ -60,8 +61,11 @@ class GoogleMapsScraper:
                     lead.click()
                     time.sleep(random.uniform(1.5, 2.5))
                     
+                    # Resilient extraction using aria-labels and data-item-ids
+                    name = sb.get_text('h1.DUwDvf') if sb.is_element_present('h1.DUwDvf') else sb.get_attribute('div[role="main"]', "aria-label")
+                    
                     data = {
-                        "name": sb.get_text('h1.DUwDvf'),
+                        "name": name,
                         "website": sb.get_attribute('a[data-item-id="authority"]', "href") if sb.is_element_present('a[data-item-id="authority"]') else None,
                         "phone": sb.get_text('button[data-item-id^="phone:tel"]') if sb.is_element_present('button[data-item-id^="phone:tel"]') else None,
                         "address": sb.get_text('button[data-item-id="address"]') if sb.is_element_present('button[data-item-id="address"]') else None,
@@ -71,11 +75,11 @@ class GoogleMapsScraper:
                         "location": location
                     }
                     
-                    if self.db.add_lead(data):
+                    if data['name'] and self.db.add_lead(data):
                         print(f"[+] Lead Saved: {data['name']} - {data['website']}")
                         count += 1
                 except Exception as e:
-                    print(f"[!] Error extracting lead: {e}")
+                    print(f"[!] Extraction failure: {e}")
                     continue
 
     def run_all(self):

@@ -59,10 +59,15 @@ class Auditor:
                 details.append("H1 tag missing")
 
             # Performance Check
-            if load_time < 3:
+            # Performance Check (Core Web Vitals: LCP)
+            if load_time < 2.5:
                 seo_score += 20
+                details.append("✅ LCP (Carga de Imagen): Excelente (< 2.5s)")
+            elif load_time < 4.0:
+                seo_score += 10
+                details.append("⚠️ LCP (Carga de Imagen): Lento (Necesita optimización)")
             else:
-                details.append(f"Page load time slow: {load_time}s")
+                details.append(f"❌ LCP (Carga de Imagen): CRÍTICO ({load_time}s)")
 
             # Security Check
             domain = urlparse(url).netloc
@@ -83,7 +88,7 @@ class Auditor:
                 "broken_link_count": broken_links,
                 "ssl_issue": not ssl_valid,
                 "status": "audited",
-                "details": "; ".join(details)
+                "details": " | ".join(details)
             }
         except Exception as e:
             print(f"[!] Audit Failed for {url}: {e}")

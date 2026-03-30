@@ -9,6 +9,7 @@ import sys
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.database import Database
+from src.logger import audit_logger
 
 class FormSniper:
     def __init__(self):
@@ -123,6 +124,7 @@ class FormSniper:
             if resp.status_code in [200, 301, 302]:
                 print(f"[+ OK] Form Injected for {lead['name']}")
                 self.db.update_lead(lead['id'], status='contacted', contacted_at=time.strftime('%Y-%m-%d %H:%M:%S'))
+                audit_logger.log("FORM_INJECTION", f"Successfully contacted {lead['name']} via {contact_url}")
                 return True
         except Exception as e:
             print(f"[!] Form injection failed for {lead['name']}: {e}")
@@ -137,7 +139,7 @@ class FormSniper:
             print("[*] No pending leads found.")
             return
 
-        semaphore = asyncio.Semaphore(50) # Process 50 simultaneously
+        semaphore = asyncio.Semaphore(100) # Increased to 100 for cloud industrial scale
         
         async def sem_inject(lead):
             async with semaphore:
