@@ -4,6 +4,8 @@ import subprocess
 import os
 import sys
 from src.database import Database
+from src.logger import audit_logger
+from src.utils import detect_lead_language
 
 # Cloud Detection
 IS_GITHUB_ACTIONS = os.getenv('GITHUB_ACTIONS') == 'true'
@@ -111,7 +113,14 @@ if __name__ == "__main__":
         print("\n[OK] ALL SYSTEMS GO. MONITORING 24/7. MINIMIZE CONSOLE TO RUN IN BACKGROUND.")
         try:
             while True:
-                time.sleep(1)
+                # Step 2: Audit & Log Intelligence
+                auditor = Auditor()
+                pending = db.get_pending_leads()
+                for lead in pending:
+                    lang = detect_lead_language(lead)
+                    audit_logger.log("INTEL_LAYER", f"Detected Language: {lang} for {lead['name']}")
+                    auditor.audit_website(lead)
+                time.sleep(60) # Scaled heartbeat
         except KeyboardInterrupt:
             print("\nStopping Industrial Engine...")
             for p in processes:

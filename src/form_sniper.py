@@ -10,6 +10,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.database import Database
 from src.logger import audit_logger
+from src.utils import detect_lead_language
 
 class FormSniper:
     def __init__(self):
@@ -18,26 +19,42 @@ class FormSniper:
         self.user_email = "jotaerre020@gmail.com"
 
     def get_form_message(self, lead):
-        """Ultra-High Conversion Form message — includes Core Web Vitals."""
+        """Hyper-Conversion Form message — Localized for global markets."""
+        lang = detect_lead_language(lead)
         loss = random.randint(1500, 4000)
         lcp = lead.get('load_time', '4.8s')
         missing_alt = lead.get('missing_alt_count', '18')
-        ssl_status = "CRÍTICO" if lead.get('ssl_issue') else "Válido"
+        ssl_status_en = "CRITICAL" if lead.get('ssl_issue') else "Valid"
+        ssl_status_es = "CRÍTICO" if lead.get('ssl_issue') else "Válido"
         
-        # Arsenal v3: More technical details
-        message = (
-            f"INFORME TÉCNICO PROFESIONAL - ELITE PERFORMANCE AUDIT TEAM\n\n"
-            f"Hemos detectado fallos en la infraestructura digital de {lead['name']} que están penalizando su posicionamiento global.\n\n"
-            f"ANÁLISIS DE RENDIMIENTO (Core Web Vitals):\n"
-            f"- LCP (Carga de Imagen): *{lcp}s* (Superior al límite de 2.5s)\n"
-            f"- Accesibilidad: *{missing_alt}* fallos detectados en etiquetas Alt.\n"
-            f"- Seguridad SSL: *{ssl_status}*.\n\n"
-            f"Impacto financiero estimado: *${loss}/mes* en potenciales clientes perdidos por lentitud y desconfianza.\n\n"
-            f"SOLUCIÓN PROFESIONAL:\n"
-            f"1️⃣ Asesoría Directa ($297): Hoja de ruta inmediata. Pago: https://www.paypal.me/JuanRomeroGarcilar\n"
-            f"2️⃣ Reparación Full ($1,000): Arreglamos todo en 48h.\n\n"
-            f"Para ver el reporte completo o contratar, contáctenos en: {self.user_email}"
-        )
+        if lang == 'EN':
+            message = (
+                f"TECHNICAL RISK REPORT - ELITE PERFORMANCE AUDIT TEAM\n\n"
+                f"We have detected failures in the digital infrastructure of {lead['name']} that are penalizing your global positioning.\n\n"
+                f"PERFORMANCE ANALYSIS (Core Web Vitals):\n"
+                f"- LCP (Image Load): *{lcp}s* (Above the 2.5s limit)\n"
+                f"- Accessibility: *{missing_alt}* missing Alt tags.\n"
+                f"- SSL Security: *{ssl_status_en}*.\n\n"
+                f"Estimated financial impact: *${loss}/month* in potential customers lost due to slowness and distrust.\n\n"
+                f"PROFESSIONAL SOLUTION:\n"
+                f"1️⃣ Expert Advisory ($297): Immediate roadmap. Payment: https://www.paypal.me/JuanRomeroGarcilar\n"
+                f"2️⃣ Full Implementation ($1,000): We repair every error for you in 48h.\n\n"
+                f"To see the full report or hire, contact us at: {self.user_email}"
+            )
+        else:
+            message = (
+                f"INFORME TÉCNICO PROFESIONAL - ELITE PERFORMANCE AUDIT TEAM\n\n"
+                f"Hemos detectado fallos en la infraestructura digital de {lead['name']} que están penalizando su posicionamiento global.\n\n"
+                f"ANÁLISIS DE RENDIMIENTO (Core Web Vitals):\n"
+                f"- LCP (Carga de Imagen): *{lcp}s* (Superior al límite de 2.5s)\n"
+                f"- Accesibilidad: *{missing_alt}* fallos detectados en etiquetas Alt.\n"
+                f"- Seguridad SSL: *{ssl_status_es}*.\n\n"
+                f"Impacto financiero estimado: *${loss}/mes* en potenciales clientes perdidos por lentitud y desconfianza.\n\n"
+                f"SOLUCIÓN PROFESIONAL:\n"
+                f"1️⃣ Asesoría Directa ($297): Hoja de ruta inmediata. Pago: https://www.paypal.me/JuanRomeroGarcilar\n"
+                f"2️⃣ Reparación Full ($1,000): Arreglamos todo en 48h.\n\n"
+                f"Para ver el reporte completo o contratar, contáctenos en: {self.user_email}"
+            )
         return message
 
     def get_subject(self, lead):
