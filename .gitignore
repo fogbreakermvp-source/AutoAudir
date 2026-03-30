@@ -1,0 +1,20 @@
+# Private Data & Sessions
+data/whatsapp_session/
+data/audit_leads.db
+data/*.csv
+
+# Python Environment
+__pycache__/
+*.pyc
+venv/
+.env
+
+# Tool Specific Files
+test_msg.txt
+test_msg_v2.txt
+dispatch_final.py
+send_test_audits.py
+
+# System Files
+.DS_Store
+Thumbs.db

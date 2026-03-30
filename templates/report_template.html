@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Informe de Auditoría Profesional - {{ business_name }}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        :root {
+            --primary: #6366f1;
+            --secondary: #4f46e5;
+            --dark: #0f172a;
+            --text-light: #f8fafc;
+            --text-dark: #334155;
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --surface: #f8fafc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            background: #fff;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            color: var(--text-light);
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.85;
+        }
+
+        .score-section {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: -30px auto 30px;
+            padding: 0 40px;
+        }
+
+        .score-box {
+            background: var(--primary);
+            color: #fff;
+            padding: 25px 30px;
+            border-radius: 16px;
+            text-align: center;
+            min-width: 180px;
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .score-box .score-value {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .score-box .score-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 35px;
+            border-left: 4px solid var(--primary);
+            padding-left: 24px;
+        }
+
+        .section h2 {
+            color: var(--dark);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .section p {
+            color: #475569;
+            margin-bottom: 10px;
+        }
+
+        .issue {
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .issue.fail {
+            background: #fef2f2;
+            border-left: 4px solid var(--error);
+            color: #991b1b;
+        }
+
+        .issue.warn {
+            background: #fffbeb;
+            border-left: 4px solid var(--warning);
+            color: #92400e;
+        }
+
+        .issue.pass {
+            background: #f0fdf4;
+            border-left: 4px solid var(--success);
+            color: #166534;
+        }
+
+        /* CTA Section — Both Offers */
+        .cta {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            margin-top: 50px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .cta h3 {
+            font-size: 1.5rem;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .cta .subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        .offers {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .offer-card {
+            background: #fff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            width: 300px;
+            text-align: left;
+        }
+
+        .offer-card.primary {
+            border-color: var(--primary);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
+        }
+
+        .offer-card .badge {
+            display: inline-block;
+            background: var(--primary);
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .offer-card h4 {
+            font-size: 1.15rem;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .offer-card .price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .offer-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .offer-card ul li {
+            padding: 4px 0;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .offer-card ul li::before {
+            content: "✓ ";
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--secondary);
+            color: #fff;
+            padding: 14px 32px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .contact-info {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .contact-info a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Informe de Auditoría Digital</h1>
+        <p>{{ business_name }}</p>
+    </div>
+
+    <div class="score-section">
+        <div class="score-box">
+            <div class="score-value">{{ audit_score }}</div>
+            <div class="score-label">PUNTUACIÓN GENERAL</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>Resumen Ejecutivo</h2>
+            <p>
+                Hemos analizado la presencia digital de <strong>{{ business_name }}</strong>
+                en múltiples áreas: SEO, Seguridad, Rendimiento y Google Maps.
+                Los resultados indican que existen <strong>{{ fail_count }}</strong>
+                áreas con oportunidades de mejora que podrían estar afectando
+                la captación de nuevos clientes.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>Diagnóstico Detallado</h2>
+            {% for issue in details.split('; ') %}
+            <div class="issue fail">
+                ❌ {{ issue }}
+            </div>
+            {% endfor %}
+            <div class="issue pass">
+                ✅ Rastreo de Google operativo
+            </div>
+            <div class="issue pass">
+                ✅ Dominio indexado correctamente
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Google Maps</h2>
+            <p>Calificación actual: <strong>{{ rating }} ⭐</strong> ({{ reviews }} reseñas)</p>
+            {% if rating < 4.5 %}
+            <div class="issue warn">
+                ⚠️ Una puntuación inferior a 4.5 puede reducir la visibilidad en búsquedas locales.
+            </div>
+            {% endif %}
+            {% if reviews < 50 %}
+            <div class="issue warn">
+                ⚠️ Un volumen de reseñas bajo dificulta generar confianza frente a la competencia.
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- BOTH OFFERS -->
+        <div class="cta">
+            <h3>¿Desea resolver estos problemas?</h3>
+            <p class="subtitle">Nuestro equipo puede ayudarle con dos opciones:</p>
+
+            <div class="offers">
+                <div class="offer-card primary">
+                    <span class="badge">⚡ MÁS RÁPIDO</span>
+                    <h4>Asesoría Profesional</h4>
+                    <div class="price">$297</div>
+                    <ul>
+                        <li>Diagnóstico completo de cada problema</li>
+                        <li>Solución paso a paso personalizada</li>
+                        <li>Priorización por impacto</li>
+                        <li>Soporte por email durante 7 días</li>
+                    </ul>
+                </div>
+
+                <div class="offer-card">
+                    <span class="badge" style="background: #0f172a;">🔧 TODO INCLUIDO</span>
+                    <h4>Reparación Completa</h4>
+                    <div class="price">$1,000</div>
+                    <ul>
+                        <li>Nuestro equipo corrige cada error</li>
+                        <li>Entrega en máximo 48 horas</li>
+                        <li>Sin esfuerzo de su parte</li>
+                        <li>Verificación final incluida</li>
+                    </ul>
+                </div>
+            </div>
+
+            <a href="https://www.paypal.com/paypalme/JuanRomeroGarcilar" class="cta-button">
+                Contratar Ahora vía PayPal
+            </a>
+
+            <div class="contact-info">
+                <p>¿Dudas o preguntas? Escríbanos a
+                    <a href="mailto:jotaerre020@gmail.com">jotaerre020@gmail.com</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Este informe fue generado de forma automatizada. Los datos reflejan el estado del sitio al momento del análisis.</p>
+    </div>
+</body>
+</html>

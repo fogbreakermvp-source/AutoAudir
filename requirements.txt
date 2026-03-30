@@ -1,0 +1,8 @@
+httpx
+asyncio
+beautifulsoup4
+requests
+seleniumbase
+sqlite3
+colorama
+pandas
