@@ -1,6 +1,6 @@
 # Private Data & Sessions
 data/whatsapp_session/
-data/audit_leads.db
+# data/audit_leads.db  # Removed: needs to sync to GitHub
 data/*.csv
 
 # Python Environment
